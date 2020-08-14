@@ -217,7 +217,7 @@ func parseDescriptor(spec string) Schedule {
 		}
 	}
 
-	const every = "@every "
+	every := "@every "
 	if strings.HasPrefix(spec, every) {
 		duration, err := time.ParseDuration(spec[len(every):])
 		if err != nil {

@@ -12,7 +12,7 @@ import (
 
     "github.com/iancoleman/strcase"
     "github.com/pkg/errors"
-    "go.etcd.io/etcd/clientv3"
+    "github.com/coreos/etcd/clientv3"
 )
 
 const (
