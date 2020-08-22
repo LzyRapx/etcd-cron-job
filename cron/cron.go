@@ -13,6 +13,7 @@ import (
     "github.com/iancoleman/strcase"
     "github.com/pkg/errors"
     "github.com/coreos/etcd/clientv3"
+
 )
 
 const (
@@ -81,13 +82,13 @@ type Entry struct {
     // been run.
     Prev time.Time
 
-    // The Job o run.
+    // The Job to run.
     Job Job
 }
 
 // byTime is a wrapper for sorting the entry array by time
 // (with zero time at the end).
-type byTime[] * Entry
+type byTime[] *Entry
 
 func(s byTime) Len() int {
     return len(s)
@@ -111,36 +112,36 @@ func(s byTime) Less(i, j int) bool {
 type CronOpt func(cron * Cron)
 
 func WithEtcdErrorsHandler(f func(context.Context, Job, error)) CronOpt {
-    return CronOpt(func(cron * Cron) {
+    return CronOpt(func(cron *Cron) {
         cron.etcdErrorsHandler = f
     })
 }
 
 func WithErrorsHandler(f func(context.Context, Job, error)) CronOpt {
-    return CronOpt(func(cron * Cron) {
+    return CronOpt(func(cron *Cron) {
         cron.errorsHandler = f
     })
 }
 
 func WithEtcdMutexBuilder(b EtcdMutexBuilder) CronOpt {
-    return CronOpt(func(cron * Cron) {
+    return CronOpt(func(cron *Cron) {
         cron.etcdclient = b
     })
 }
 
 func WithFuncCtx(f func(context.Context, Job) context.Context) CronOpt {
-    return CronOpt(func(cron * Cron) {
+    return CronOpt(func(cron *Cron) {
         cron.funcCtx = f
     })
 }
 
 // New returns a new Cron job runner.
-func New(opts...CronOpt)( * Cron, error) {
-    cron := & Cron {
+func New(opts ...CronOpt)(*Cron, error) {
+    cron := &Cron {
         entries: nil,
-        add: make(chan * Entry),
+        add: make(chan *Entry),
         stop: make(chan struct {}),
-        snapshot: make(chan[] * Entry),
+        snapshot: make(chan[] *Entry),
         running: false,
     }
     for _, opt := range opts {
@@ -172,7 +173,7 @@ func New(opts...CronOpt)( * Cron, error) {
 }
 
 // AddFunc adds a Job to the Cron to be run on the given schedule.
-func(c * Cron) AddJob(job Job) error {
+func(c *Cron) AddJob(job Job) error {
     schedule, err := Parse(job.Rhythm)
     if err != nil {
         return err
@@ -182,8 +183,8 @@ func(c * Cron) AddJob(job Job) error {
 }
 
 // Schedule adds a Job to the Cron to be run on the given schedule.
-func(c * Cron) Schedule(schedule Schedule, job Job) {
-    entry := & Entry {
+func(c *Cron) Schedule(schedule Schedule, job Job) {
+    entry := &Entry {
         Schedule: schedule,
         Job: job,
     }
@@ -196,7 +197,7 @@ func(c * Cron) Schedule(schedule Schedule, job Job) {
 }
 
 // Entries returns a snapshot of the cron entries.
-func(c * Cron) Entries()[] * Entry {
+func(c *Cron) Entries()[] *Entry {
     if c.running {
         c.snapshot <-nil
         x := <-c.snapshot
@@ -206,7 +207,7 @@ func(c * Cron) Entries()[] * Entry {
 }
 
 // Start the cron scheduler in its own go-routine.
-func(c * Cron) Start(ctx context.Context) {
+func(c *Cron) Start(ctx context.Context) {
     c.running = true
     go c.run(ctx)
 }
